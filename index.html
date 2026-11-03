@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<meta name="color-scheme" content="dark">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Світло</title>
+<style>
+:root{--bg:#000;--c1:#141414;--c2:#262626;--tx:#fff;--mu:#8d8d8d;--or:#ff9524;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.25 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{max-width:560px;margin:0 auto;padding:env(safe-area-inset-top) 16px calc(env(safe-area-inset-bottom) + 28px)}
+button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer;text-align:inherit}
+svg{width:24px;height:24px;fill:currentColor;display:block;flex:none}
+.top{display:flex;align-items:center;gap:6px;height:68px}
+.top h1{flex:1;margin:0 0 0 6px;font-size:19px;font-weight:500}
+.sq{width:56px;height:56px;border-radius:18px;background:var(--or);display:grid;place-items:center;flex:none;color:#fff}
+.sq svg{width:30px;height:30px}
+.top .sq{width:42px;height:42px;border-radius:13px}
+.top .sq svg{width:24px;height:24px}
+.ib{width:46px;height:46px;border-radius:50%;display:grid;place-items:center}
+.card{display:block;width:100%;background:var(--c1);border-radius:30px;padding:22px 24px;margin-bottom:14px}
+.row{display:flex;align-items:center;gap:18px}
+.nm{flex:1;min-width:0;font-size:30px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mu{color:var(--mu)}
+.lb{margin-top:16px;font-size:18px;color:var(--mu)}
+.big{display:flex;align-items:center;gap:10px;margin-top:6px;font-size:28px;font-weight:600}
+.big svg{color:var(--mu)}
+.pill{display:inline-flex;align-items:center;gap:10px;margin-top:16px;padding:10px 16px;border-radius:18px;background:#2a1c0e;color:var(--or);font-size:18px}
+.pill svg{width:22px;height:22px}
+.note{margin:0 4px 14px;color:var(--or);font-size:14px}
+.hd{display:flex;align-items:center;gap:18px;margin:6px 0 4px}
+.hd .sq{width:72px;height:72px;border-radius:24px}
+.hd .sq svg{width:40px;height:40px}
+.hd h2{margin:0;font-size:46px;font-weight:600;line-height:1.1;overflow-wrap:anywhere}
+.gp{display:inline-block;margin-top:14px;padding:12px 20px;border-radius:24px;background:var(--c1);color:var(--mu);font-size:20px}
+.pan{background:var(--c1);border-radius:36px;padding:22px 0 6px;margin:22px 0 14px}
+.days{display:flex;gap:6px;padding:0 14px 18px}
+.days button{flex:1;aspect-ratio:1;border-radius:50%;background:var(--c2);color:var(--mu);font-weight:700;text-align:center}
+.days .a{background:var(--or);color:#fff}
+.iv{display:flex;align-items:center;height:58px;padding:0 18px;font-size:20px}
+.iv i{width:34px;color:var(--mu);font-style:normal}
+.iv b{flex:1;text-align:center;font-weight:500}
+.iv span{min-width:86px;text-align:right;color:var(--mu)}
+.iv.e b{color:var(--or)}
+.iv.x b,.iv.p b{color:var(--mu)}
+.iv.now{background:var(--c2)}
+.ft{margin:12px 22px 0;padding:14px 0 12px;border-top:1px solid #2e2e2e;color:var(--mu);font-size:17px}
+.ft div{display:flex;align-items:center;gap:14px;margin:12px 0}
+.act{display:flex;align-items:center;gap:18px;width:100%;margin-bottom:12px;padding:22px 24px;border-radius:30px;background:var(--c1);font-size:20px}
+.act svg{color:var(--mu)}
+dialog{width:min(92vw,420px);padding:24px;border:0;border-radius:30px;background:#1a1a1a;color:var(--tx)}
+dialog::backdrop{background:rgba(0,0,0,.72)}
+dialog h3{margin:0 0 4px;font-size:22px}
+dialog label{display:block;margin:16px 0 6px;color:var(--mu);font-size:14px}
+dialog input,dialog select{width:100%;padding:14px;border:1px solid #343434;border-radius:14px;background:#0c0c0c;color:var(--tx);font:inherit}
+.bt{display:flex;gap:10px;margin-top:22px}
+.bt button{flex:1;padding:15px;border-radius:16px;background:var(--c2);font-weight:600;text-align:center}
+.bt .ok{background:var(--or);color:#000}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<dialog id="dlg">
+<h3 id="dt"></h3>
+<label for="fn">Назва</label><input id="fn" maxlength="24" autocomplete="off">
+<label for="fr">Регіон</label><select id="fr"></select>
+<label for="fg">Черга (група)</label><select id="fg"></select>
+<label for="fi">Іконка</label><select id="fi"><option value="home">Дім</option><option value="work">Робота</option></select>
+<div class="bt"><button data-a="cx">Скасувати</button><button class="ok" data-a="ok">Зберегти</button></div>
+</dialog>
+<script>
+// Дані: відкритий JSON, який кожні кілька хвилин збирає github.com/Baskerville42/outage-data-ua з сайтів ДТЕК
+const SRC=r=>`https://raw.githubusercontent.com/Baskerville42/outage-data-ua/main/data/${r}.json?t=${Math.floor(Date.now()/6e4)}`;
+const REG={'kyiv-region':'Київська обл.','kyiv':'м. Київ','dnipro':'Дніпро','odesa':'Одеса'};
+const GR=['1.1','1.2','2.1','2.2','3.1','3.2','4.1','4.2','5.1','5.2','6.1','6.2'];
+const DN=['Пн','Вт','Ср','Чт','Пт','Сб','Нд'];
+const P={
+home:'<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>',
+work:'<path d="M20 6h-4V4c0-1.11-.89-2-2-2h-4c-1.11 0-2 .89-2 2v2H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-6 0h-4V4h4v2z"/>',
+add:'<path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>',
+ref:'<path d="M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>',
+back:'<path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>',
+pin:'<path d="M16 9V4h1c.55 0 1-.45 1-1s-.45-1-1-1H7c-.55 0-1 .45-1 1s.45 1 1 1h1v5c0 1.66-1.34 3-3 3v2h5.97v7l1 1 1-1v-7H19v-2c-1.66 0-3-1.34-3-3z"/>',
+edit:'<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>',
+del:'<path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>',
+info:'<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>',
+clock:'<path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>',
+bolt:'<path d="M7 2v11h3v9l7-12h-4l4-8z"/>',
+off:'<path d="M7 2v11h3v9l7-12h-4l4-8z" opacity=".5"/><path d="M4 3l16 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>'};
+const ic=n=>`<svg viewBox="0 0 24 24">${P[n]}</svg>`;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// Пам'ять: локації, закріплена, кеш графіків (localStorage)
+let S;try{S=JSON.parse(localStorage.getItem('svitlo.v1'))}catch(e){}
+if(!S||!Array.isArray(S.locs))S={locs:[{id:'l1',name:'Home',reg:'kyiv-region',gr:'1.2',ico:'home'}],pin:'l1',data:{}};
+const save=()=>{try{localStorage.setItem('svitlo.v1',JSON.stringify(S))}catch(e){}};
+let view='list',cur=null,day=0,edId=null,busy=false,err='';
+
+// Час завжди за Києвом, незалежно від налаштувань телефону
+const F=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Kyiv',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'});
+const kp=ms=>{const p={};F.formatToParts(new Date(ms)).forEach(x=>p[x.type]=x.value);return p};
+const dsOf=ms=>{const p=kp(ms);return`${p.year}-${p.month}-${p.day}`};
+function now(){const p=kp(Date.now()),y=+p.year,m=+p.month,d=+p.day;
+ return{y,m,d,ds:dsOf(Date.now()),dow:(new Date(Date.UTC(y,m-1,d)).getUTCDay()+6)%7+1,min:+p.hour*60+ +p.minute+ +p.second/60}}
+const plus=(n,k)=>new Date(Date.UTC(n.y,n.m-1,n.d+k)).toISOString().slice(0,10);
+
+// Година -> два півгодинних слоти: e = світло є, x = немає, p = можливо
+const HV={yes:'ee',no:'xx',first:'xe',second:'ex',maybe:'pp',mfirst:'pe',msecond:'ep'};
+const slots=h=>{let s='';for(let i=1;i<=24;i++)s+=HV[h[i]]||'ee';return s};
+function dayOf(l,ds,dow){const D=S.data[l.id];if(!D)return null;
+ if(D.f&&D.f[ds])return{s:slots(D.f[ds]),f:1};
+ return D.p&&D.p[dow]?{s:slots(D.p[dow]),f:0}:null}
+const ivs=s=>{const o=[];for(let i=0,j;i<48;i=j){j=i;while(j<48&&s[j]===s[i])j++;o.push({t:s[i],a:i*30,b:j*30})}return o};
+const dur=m=>{const h=Math.floor(m/60),r=Math.round(m%60);return m<1?'<1хв':(h?h+'г':'')+(h&&r?' ':'')+(r?r+'хв':'')};
+const hm=m=>String(Math.floor(m/60)%24).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+
+function status(l){const n=now(),a=dayOf(l,n.ds,n.dow);if(!a||!a.f)return null;
+ const b=dayOf(l,plus(n,1),n.dow%7+1),q=a.s+(b&&b.f?b.s:'?'.repeat(48)),c=Math.floor(n.min/30);
+ let j=c+1;
+ if(q[c]==='x'){while(j<96&&q[j]==='x')j++;return{off:1,m:j<96&&q[j]!=='?'?j*30-n.min:null}}
+ while(j<96&&q[j]!=='x')j++;return{off:0,m:j<96?j*30-n.min:null}}
+
+function when(u){const m=/(\d\d)\.(\d\d)\.(\d{4}) (\d\d:\d\d)/.exec(u||'');if(!m)return'—';const n=now(),ds=`${m[3]}-${m[2]}-${m[1]}`;
+ return(ds===n.ds?'сьогодні':ds===plus(n,-1)?'вчора':`${m[1]}.${m[2]}`)+' о '+m[4]}
+
+function vList(){
+ const L=[...S.locs].sort((a,b)=>(b.id===S.pin)-(a.id===S.pin));
+ return`<div class="top"><div class="sq">${ic('home')}</div><h1>Світло</h1><button class="ib" data-a="ref" aria-label="Оновити">${ic('ref')}</button><button class="ib" data-a="add" aria-label="Додати локацію">${ic('add')}</button></div>`
+ +(err?`<div class="note">${err}</div>`:'')
+ +(L.length?'':'<div class="lb">Натисни «+» і додай свою чергу</div>')
+ +L.map(l=>{const s=status(l);let b;
+  if(!s)b=`<div class="pill">${ic('info')}Немає графіку</div>`;
+  else if(s.m==null)b=`<div class="lb">${s.off?'Відключення триває':'Найближчим часом відключень немає'}</div>`;
+  else b=`<div class="lb">${s.off?'До увімкнення світла':'До відключення світла'}:</div><div class="big">${ic(s.off?'bolt':'off')}${dur(Math.floor(s.m))}</div>`;
+  return`<button class="card" data-a="open" data-id="${l.id}"><div class="row"><div class="sq">${ic(l.ico==='work'?'work':'home')}</div><div class="nm">${esc(l.name)}</div>${S.pin===l.id?`<span class="mu">${ic('pin')}</span>`:''}</div>${b}</button>`}).join('')}
+
+function vDet(){const l=S.locs.find(x=>x.id===cur);if(!l){view='list';return vList()}
+ const n=now(),D=S.data[l.id]||{};if(!day)day=n.dow;
+ const d=dayOf(l,plus(n,day-n.dow),day);
+ const rows=d?ivs(d.s).map(v=>`<div class="iv ${v.t}${day===n.dow&&v.a<=n.min&&n.min<v.b?' now':''}"><i>${v.t==='x'?ic('off'):v.t==='p'?ic('info'):''}</i><b>${hm(v.a)} - ${hm(v.b)}</b><span>${dur(v.b-v.a)}</span></div>`).join(''):'<div class="iv"><b class="mu">Немає даних</b></div>';
+ const chk=D.lu?kp(Date.parse(D.lu)):null;
+ return`<div class="top"><button class="ib" data-a="back" aria-label="Назад">${ic('back')}</button></div>
+<div class="hd"><div class="sq">${ic(l.ico==='work'?'work':'home')}</div><h2>${esc(l.name)}</h2></div>
+<div class="mu" style="font-size:20px;margin-top:10px">${REG[l.reg]||l.reg}</div><span class="gp">Група ${l.gr}</span>
+<div class="pan"><div class="days">${DN.map((x,i)=>`<button class="${i+1===day?'a':''}" data-a="day" data-d="${i+1}">${x}</button>`).join('')}</div>${rows}
+<div class="ft"><div>${ic('clock')}Графік оновлено ${when(D.u)}</div><div>${ic('info')}Можливі відключення світла</div><div>${ic('off')}Відключення світла</div>${chk?`<div class="mu" style="font-size:14px;margin-top:4px">Джерело перевірено о ${chk.hour}:${chk.minute}</div>`:''}</div></div>
+<button class="act" data-a="pin">${ic('pin')}Зробити головною</button>
+<button class="act" data-a="edit">${ic('edit')}Змінити локацію</button>
+<button class="act" data-a="del">${ic('del')}Видалити локацію</button>`}
+
+function draw(){const y=scrollY;$('#app').innerHTML=view==='det'?vDet():vList();scrollTo(0,y)}
+
+async function load(){if(busy)return;busy=true;err='';
+ await Promise.all([...new Set(S.locs.map(l=>l.reg))].map(async r=>{try{
+  const res=await fetch(SRC(r),{cache:'no-store'});if(!res.ok)throw 0;
+  const j=await res.json(),fa=j.fact||{},pr=(j.preset||{}).data||{};
+  S.locs.filter(l=>l.reg===r).forEach(l=>{const g='GPV'+l.gr,f={};
+   for(const k in fa.data||{}){const h=fa.data[k][g];if(h)f[dsOf(k*1000)]=h}
+   S.data[l.id]={f,p:pr[g]||null,u:fa.update||'',lu:j.lastUpdated||'',at:Date.now()}})
+ }catch(e){err='Немає зв’язку з джерелом — показую збережені дані'}}));
+ busy=false;save();draw()}
+
+const dlg=$('#dlg');
+$('#fr').innerHTML=Object.entries(REG).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+$('#fg').innerHTML=GR.map(g=>`<option value="${g}">${g}</option>`).join('');
+function edit(id){edId=id;const l=S.locs.find(x=>x.id===id)||{name:'',reg:'kyiv-region',gr:'1.1',ico:'home'};
+ $('#dt').textContent=id?'Змінити локацію':'Нова локація';
+ $('#fn').value=l.name;$('#fr').value=l.reg;$('#fg').value=l.gr;$('#fi').value=l.ico||'home';dlg.showModal()}
+
+document.addEventListener('click',e=>{const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a;
+ if(a==='open'){cur=t.dataset.id;day=0;view='det';history.pushState(1,'');draw();scrollTo(0,0)}
+ else if(a==='back')history.back();
+ else if(a==='day'){day=+t.dataset.d;draw()}
+ else if(a==='add')edit(null);
+ else if(a==='edit')edit(cur);
+ else if(a==='pin'){S.pin=cur;save();draw()}
+ else if(a==='del'){if(confirm('Видалити локацію?')){S.locs=S.locs.filter(x=>x.id!==cur);delete S.data[cur];if(S.pin===cur)S.pin=S.locs[0]?S.locs[0].id:null;save();history.back()}}
+ else if(a==='ref')load();
+ else if(a==='cx')dlg.close();
+ else if(a==='ok'){const name=$('#fn').value.trim();if(!name){$('#fn').focus();return}
+  const o={name,reg:$('#fr').value,gr:$('#fg').value,ico:$('#fi').value};
+  if(edId){const l0=S.locs.find(x=>x.id===edId);if(l0.reg!==o.reg||l0.gr!==o.gr)delete S.data[edId];Object.assign(l0,o)}
+  else{const id='l'+Date.now().toString(36);S.locs.push({id,...o});if(!S.pin)S.pin=id}
+  save();dlg.close();draw();load()}});
+addEventListener('popstate',()=>{view='list';draw()});
+
+draw();load();
+setInterval(()=>{if(!document.hidden)draw()},20000);
+setInterval(()=>{if(!document.hidden)load()},120000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){draw();load()}});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
